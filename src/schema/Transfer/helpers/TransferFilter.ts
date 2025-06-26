@@ -22,7 +22,7 @@ export const createWhereCondition = (filter: any) => {
     matchCondition.payeeDFSP = filter.payeeDFSP;
   }
   if (filter?.transferState) {
-    matchCondition.transferState = filter.transferState;
+    matchCondition.transferStateEnum = filter.transferState;
   }
   if (filter?.conversionState) {
     // Handle conversionState filter with OR condition
