@@ -33,7 +33,7 @@ const TransferStateChange = objectType({
   name: 'TransferStateChange',
   definition(t) {
     t.nonNull.string('transferState');
-    t.nonNull.string('transferStateEnum');
+    t.string('transferStateEnum');
     t.nonNull.dateTimeFlex('dateTime');
     t.string('reason');
   },
