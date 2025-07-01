@@ -1,0 +1,25 @@
+{
+  "PORT": 3000,
+  "REPORTING_DB": {
+    "DIALECT": "mysql",
+    "HOST": "localhost",
+    "PORT": 3306,
+    "USER": "root",
+    "PASSWORD": "UL^62wClP0!^T2O1Em5N",
+    "SCHEMA": "central_ledger"
+  },
+  "EVENT_STORE_DB": {
+    "HOST": "localhost",
+    "PORT": 27017,
+    "USER": "mojaloop",
+    "PASSWORD": "R_DD99rS2K5Oj6a8d6hW",
+    "DATABASE": "mojaloop"
+  },
+  "ORY_KETO_READ_URL": "",
+  "AUTH_CHECK_PARTICIPANTS": false,
+  "USER_ID_HEADER": "x-user",
+  "CORS_WHITELIST": [
+    "http://localhost:8082"
+  ],
+  "ALLOW_CREDENTIALS": true
+}

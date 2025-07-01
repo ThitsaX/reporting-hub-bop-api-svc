@@ -33,6 +33,7 @@ const TransferStateChange = objectType({
   name: 'TransferStateChange',
   definition(t) {
     t.nonNull.string('transferState');
+    t.string('transferStateEnum');
     t.nonNull.dateTimeFlex('dateTime');
     t.string('reason');
   },
@@ -64,8 +65,8 @@ const GeoCode = objectType({
 const Amount = objectType({
   name: 'Amount',
   definition(t) {
-    t.nonNull.float('amount');
-    t.nonNull.string('currency');
+    t.float('amount');
+    t.string('currency');
   },
 });
 
@@ -161,10 +162,10 @@ const QuoteRequest = objectType({
 const TransferParty = objectType({
   name: 'TransferParty',
   definition(t) {
-    t.nonNull.string('partyIdType');
-    t.nonNull.string('partyIdentifier');
-    t.nonNull.string('partyName');
-    t.nonNull.string('supportedCurrencies');
+    t.string('partyIdType');
+    t.string('partyIdentifier');
+    t.string('partyName');
+    t.string('supportedCurrencies');
   },
 });
 
@@ -182,6 +183,7 @@ const Transfer = objectType({
     t.dateTimeFlex('createdAt');
     t.dateTimeFlex('lastUpdated');
     t.string('transferState');
+    t.string('transferStateEnum');
     t.string('transactionType');
     t.string('baseUseCase');
     t.string('errorCode');
