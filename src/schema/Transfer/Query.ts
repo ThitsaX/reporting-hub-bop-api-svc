@@ -50,9 +50,9 @@ const Query = extendType({
       resolve: async (_, args, ctx): Promise<any> => {
         try {
           // Fetch a single transaction by transferId
-            const transaction = await ctx.transaction.findOne({
-              transferId: args.transferId,
-            });
+          const transaction = await ctx.transaction.findOne({
+            transferId: args.transferId,
+          });
 
           if (!transaction) {
             console.log(`No transaction found for transferId: ${args.transferId}`);
@@ -76,27 +76,53 @@ const Query = extendType({
       },
       resolve: async (_, args, ctx): Promise<any> => {
         try {
-          const { limit = 20, offset = 0, filter = {} } = args;
+          const { limit = 50, offset = 0, filter = {} } = args;
+          // Enforce reasonable limits to prevent abuse
+          const safeLimit = Math.min(limit, 1000);
+          const safeOffset = Math.max(offset, 0);
           // Create where condition based on filter
           const whereCondition = createWhereCondition(filter);
           // Fetch multiple transactions with pagination and filtering
-          const transfers = await ctx.transaction.find(whereCondition)
-          .sort({ createdAt: -1 })
-          .skip(offset ?? 0)
-          .limit(limit ?? 100)
-          .toArray();
+          const transfers = await ctx.transaction
+            .find(whereCondition)
+            .sort({ createdAt: -1 })
+            .skip(safeOffset)
+            .limit(safeLimit)
+            .toArray();
 
-          // Filter and map the results to return event.content.payload
           if (transfers.length === 0) {
             console.log(
-              `No transfers found with limit: ${limit}, offset: ${offset}, and filter: ${JSON.stringify(filter)}`
+              `No transfers found with limit: ${safeLimit}, offset: ${safeOffset}, and filter: ${JSON.stringify(
+                filter
+              )}`
             );
           }
-          // console.log('Transfer data fetched is : ', transfers);
+
           return transfers;
         } catch (error) {
           console.error('Error fetching transfers', error);
           throw new Error('Error fetching transfers data');
+        }
+      },
+    });
+
+    // Add totalCount query for pagination
+    t.nonNull.int('transfersCount', {
+      args: {
+        filter: TransferFilter,
+      },
+      resolve: async (_, args, ctx): Promise<number> => {
+        try {
+          const { filter = {} } = args;
+          const whereCondition = createWhereCondition(filter);
+
+          // Get total count for pagination
+          const totalCount = await ctx.transaction.countDocuments(whereCondition);
+
+          return totalCount;
+        } catch (error) {
+          console.error('Error counting transfers', error);
+          throw new Error('Error counting transfers');
         }
       },
     });
