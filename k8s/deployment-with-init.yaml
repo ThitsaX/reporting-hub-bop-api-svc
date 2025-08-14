@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reporting-hub-bop-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reporting-hub-bop-api
+  template:
+    metadata:
+      labels:
+        app: reporting-hub-bop-api
+    spec:
+      # Init container runs migration before main app starts
+      initContainers:
+      - name: mongodb-migration
+        image: your-registry/reporting-hub-migration:latest
+        env:
+        - name: MONGO_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: reporting-config
+              key: mongo-host
+        - name: MONGO_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: reporting-config
+              key: mongo-port
+        - name: MONGO_USER
+          valueFrom:
+            secretKeyRef:
+              name: reporting-secrets
+              key: mongo-username
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: reporting-secrets
+              key: mongo-password
+        - name: MONGO_AUTH_DB
+          value: "admin"
+        - name: MONGO_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: reporting-config
+              key: mongo-database
+      
+      # Main application container
+      containers:
+      - name: reporting-hub-bop-api
+        image: your-registry/reporting-hub-bop-api:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: EVENT_STORE_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: reporting-config
+              key: mongo-host
+        # ... other env vars

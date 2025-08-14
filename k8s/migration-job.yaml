@@ -1,0 +1,49 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-migration-indexes
+  labels:
+    app: reporting-hub-migration
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: mongodb-migration
+        image: your-registry/reporting-hub-migration:latest
+        env:
+        - name: MONGO_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: reporting-config
+              key: mongo-host
+        - name: MONGO_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: reporting-config
+              key: mongo-port
+        - name: MONGO_USER
+          valueFrom:
+            secretKeyRef:
+              name: reporting-secrets
+              key: mongo-username
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: reporting-secrets
+              key: mongo-password
+        - name: MONGO_AUTH_DB
+          value: "admin"
+        - name: MONGO_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: reporting-config
+              key: mongo-database
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+  backoffLimit: 3

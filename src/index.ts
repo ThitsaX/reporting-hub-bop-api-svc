@@ -18,6 +18,7 @@ import { createContext, Context } from './context';
 import Config from './lib/config';
 import { applyMiddleware } from 'graphql-middleware';
 import { createAuthMiddleware } from '@app/lib';
+import { initializeTransferIndexes } from './lib/initializeIndexes';
 import Logger from '@mojaloop/central-services-logger';
 import { GraphQLRequestContext } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
@@ -45,6 +46,14 @@ const loggerPlugin = {
 };
 
 const startServer = async () => {
+  // Initialize database indexes before starting server
+  try {
+    await initializeTransferIndexes();
+  } catch (error) {
+    Logger.error('Failed to initialize database indexes:', error);
+    process.exit(1);
+  }
+
   // @ts-ignore
   const server = new ApolloServer<Context>({
     schema: applyMiddleware(schema, authMiddleware),
