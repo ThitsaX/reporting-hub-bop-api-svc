@@ -19,6 +19,7 @@ export const TransferGroup = objectType({
     t.string('targetCurrency');
     t.string('payerDFSP');
     t.string('payeeDFSP');
+    t.string('transferState');
   },
 });
 
